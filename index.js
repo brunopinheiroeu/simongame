@@ -1,20 +1,17 @@
 //Start
 var colorCheck = [];
 var clickArray = [];
+var level = 1;
 var color = ["red", "blue", "yellow", "green"];
 
 $(document).keydown(function(event) {
-  $("h1").text("Repeat the movement!");
-  $(".btn").attr("disabled",false);
-  //  console.log(event.key);
+  $("h1").text("Level "+level+". Repeat the movement!");
   playGame();
   btnActive();
 });
 
 $("h1").click(function(event) {
-  $("h1").text("Repeat the movement!");
-  $(".btn").attr("disabled",false);
-  //  console.log(event.key);
+  $("h1").text("Level "+level+". Repeat the movement!");
   playGame();
   btnActive();
 });
@@ -29,7 +26,6 @@ function playGame() {
 
 function btnActive() {
   $(".btn").click(function(btnCliked) {
-    //console.log(btnCliked.currentTarget.id);
     $(btnCliked.currentTarget).addClass("pressed");
     makeSound(btnCliked.currentTarget.id);
     clickArray.push(btnCliked.currentTarget.id);
@@ -41,8 +37,6 @@ function btnActive() {
 
   });
 }
-
-
 
 //checking if the sequence is right
 function isItRight() {
@@ -69,12 +63,17 @@ function isItRight() {
 
 function realGame() {
   if (isItRight() == true) {
-    $("h1").text("Great! Now more!");
+    level++;
+    $("h1").text("Level "+level+" Great! Next!");
     clickArray = [];
     setTimeout(playGame,1000);
   } else if (isItRight() == false) {
-    $("h1").text("You lost! Click here or Press any key to Restart");
+    $("h1").text("Game Over! Click or Press key");
     $(".btn").off("click");
+    $("body").addClass("game-over");
+    setTimeout(function(){
+      $("body").removeClass("game-over");
+    },200);
     var gameover = new Audio('sounds/wrong.mp3');
     gameover.play();
     colorCheck = [];
@@ -91,15 +90,10 @@ function realGame() {
 function randomize() {
   var colorRandom = color[Math.floor(Math.random() * 4)];
   colorCheck.push(colorRandom);
-  //makeSound(colorRandom);
 }
 
 function buttonPressed(color) {
-  $("." + color).addClass("pressed");
-  //console.log("."+color);
-  setTimeout(function() {
-    $("." + color).removeClass("pressed");
-  }, 100);
+$('.'+color).delay(70).fadeOut().fadeIn('slow');
 }
 
 function makeSound(color) {
@@ -107,26 +101,18 @@ function makeSound(color) {
     case "red":
       var red = new Audio('sounds/red.mp3');
       red.play();
-      //console.log(color);
-      buttonPressed(color);
       break;
     case "blue":
       var blue = new Audio('sounds/blue.mp3');
       blue.play();
-      //console.log(color);
-      buttonPressed(color);
       break;
     case "yellow":
       var yellow = new Audio('sounds/yellow.mp3');
       yellow.play();
-      //console.log(color);
-      buttonPressed(color);
       break;
     case "green":
       var green = new Audio('sounds/green.mp3');
       green.play();
-      //console.log(color);
-      buttonPressed(color);
       break;
 
     default:
@@ -136,11 +122,12 @@ function makeSound(color) {
 }
 
 function sequence() {
-  let interval = 1000;
+  let interval = 700;
   colorCheck.forEach((mode, index) => {
 
     setTimeout(() => {
       makeSound(mode)
+      buttonPressed(mode)
     }, index * interval)
   })
 }
